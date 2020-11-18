@@ -3,15 +3,15 @@ from datetime import datetime
 
 
 class Ventilation:
-    is_running = True
 
     def __init__(self, window_controller, notice_sender, sensor):
         self.window_controller = window_controller
         self.notice_sender = notice_sender
         self.sensor = sensor
+        self.is_stop = True
 
     def run(self):
-        if not self.is_running:
+        if self.is_stop:
             return
 
         print(f"start ventilation {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
