@@ -23,6 +23,7 @@
   "dependencies": {
     "@nuxt/typescript-runtime": "^2.0.0",
     "@nuxtjs/axios": "^5.12.2",
+    "@nuxtjs/proxy": "^2.0.1",
     "core-js": "^3.6.5",
     "nuxt": "^2.14.6",
     "nuxt-buefy": "^0.4.3"
@@ -42,6 +43,8 @@
     "husky": "^4.3.0",
     "lint-staged": "^10.4.0",
     "prettier": "^2.1.2",
+    "pug": "^2.0.3",
+    "pug-plain-loader": "^1.0.0",
     "stylelint": "^13.7.2",
     "stylelint-config-prettier": "^8.0.2",
     "stylelint-config-standard": "^20.0.0"
