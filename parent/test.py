@@ -9,19 +9,19 @@ from window_controller import WindowController
 
 class SensorTest:
     def get_humid(self):
-        return 10
+        return 10.5
 
 
 def main():
     sensor = SensorTest()
     window_controller = WindowController()
     notice_sender = NoticeSender()
-    ventilation = Ventilation(window_controller, notice_sender, sensor)
-
-    scheduler = Scheduler(ventilation)
+    scheduler = Scheduler()
     scheduler.start()
+    ventilation = Ventilation(window_controller, notice_sender, sensor, scheduler)
+    ventilation.start()
 
-    server = Server(window_controller, sensor)
+    server = Server(window_controller, sensor, ventilation)
     server.run()
 
 

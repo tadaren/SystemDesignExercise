@@ -1,14 +1,28 @@
 import time
+import threading
 from datetime import datetime
 
 
 class Ventilation:
 
-    def __init__(self, window_controller, notice_sender, sensor):
+    def __init__(self, window_controller, notice_sender, sensor, scheduler, interval: int = 30):
         self.window_controller = window_controller
         self.notice_sender = notice_sender
         self.sensor = sensor
+        self.scheduler = scheduler
+        self.is_stop = False
+        self.interval = interval
+
+    def __runner(self):
+        threading.Thread(target=self.run).start()
+
+    def stop(self):
         self.is_stop = True
+        self.scheduler.delete(self.current_job)
+
+    def start(self):
+        self.is_stop = False
+        self.current_job = self.scheduler.register(self.__runner, self.interval)
 
     def run(self):
         if self.is_stop:
