@@ -1,17 +1,14 @@
 import bottle
 from window_controller import WindowController
 
-from gevent.pywsgi import WSGIServer
-from geventwebsocket import WebSocketError
-from geventwebsocket.handler import WebSocketHandler
-
 
 class Server:
-    def __init__(self, window_controller: WindowController, sensor):
+    def __init__(self, window_controller: WindowController, sensor, ventilation):
         app = bottle.Bottle()
         self.app = app
         self.window_controller = window_controller
         self.sensor = sensor
+        self.ventilation = ventilation
 
         @app.get('/')
         def index():
@@ -49,18 +46,32 @@ class Server:
         def get_humid():
             return str(sensor.get_humid())
 
-        @app.route('/websocket')
-        def websocket():
-            wsock = bottle.request.environ.get('wsgi.websocket')
-            if not wsock:
-                bottle.abort(400, 'Expected WebSocket request.')
+        @app.get('/api/mode')
+        def get_mode():
+            if self.ventilation.is_stop:
+                if self.window_controller.is_open:
+                    return 'open'
+                else:
+                    return 'close'
+            else:
+                return 'auto'
 
-            while True:
-                try:
-                    wsock.send(str(sensor.get_humid()))
-                except WebSocketError:
-                    break
+        @app.post('/api/mode')
+        def set_mode():
+            param = bottle.request.body.read().decode('utf-8')
+
+            if param == 'auto':
+                if self.ventilation.is_stop:
+                    self.ventilation.start()
+            elif param == 'open':
+                self.ventilation.stop()
+                self.window_controller.open()
+            elif param == 'close':
+                self.ventilation.stop()
+                self.window_controller.close()
+            else:
+                bottle.response.status = 400
+                return 'bad parameter'
 
     def run(self):
-        server = WSGIServer(("0.0.0.0", 8080), self.app, handler_class=WebSocketHandler)
-        server.serve_forever()
+        self.app.run(host='0.0.0.0', port=8080)
