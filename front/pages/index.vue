@@ -5,7 +5,7 @@
         span.has-text-weight-bold(v-bind:class="{ 'has-text-danger': isDanger }") {{ humid }}%
 
       card(title="現在の開放限度")
-        span.has-text-weight-bold {{ openLimit }}%
+        span.has-text-weight-bold {{ openLimitText }}
 
       card(title="現在の状態")
         span.has-text-weight-bold {{ open }}
@@ -31,20 +31,22 @@ export default {
     Card,
   },
   async asyncData({ $axios }){
-    let res = await Promise.all([$axios.$get('/api/humid'), $axios.$get('/api/isopen'), $axios.$get('/api/openlimit')]);
+    let res = await Promise.all([$axios.$get('/api/humid'), $axios.$get('/api/isopen'), $axios.$get('/api/openlimit'), $axios.$get('/api/mode')]);
     let humid = Number.parseFloat(res[0]);
     let isOpen = res[1] == 'True';
     let openLimit = Number.parseInt(res[2]);
+    let mode = res[3];
 
     return {
       humid,
       isOpen,
       openLimit,
+      mode,
     }
   },
   watch:{
-    mode: function(oldValue, newValue){
-      // TODO 
+    mode: function(newValue, oldValue){
+      this.$axios.post('/api/mode', newValue);
     }
   },
   computed: {
@@ -57,12 +59,32 @@ export default {
     },
     isDanger: function(){
       return this.humid <= 30.0
+    },
+    openLimitText: function(){
+      if(this.openLimit == 0){
+        return '締め切り';
+      }else{
+        return this.openLimit + '%';
+      }
     }
   },
-  data(){
-    return {
-      mode: 'auto'
-    }
+  mounted: function(){
+    setInterval(() => {
+      this.$axios.get('/api/humid').then(res => {
+        console.log(res);
+        this.humid = Number.parseFloat(res.data);
+      });
+      this.$axios.get('/api/isopen').then(res => {
+        console.log(res);
+        this.isOpen = res.data == 'True';
+      })
+    }, 1000);
+    setInterval(() => {
+      this.$axios.get('/api/openlimit').then(res => {
+        console.log(res);
+        this.openLimit = Number.parseInt(res.data);
+      })
+    }, 10000);
   }
 }
 </script>
