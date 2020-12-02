@@ -4,7 +4,9 @@ from server import Server
 from scheduler import Scheduler
 from ventilation import Ventilation
 from window_controller import WindowController
+from dotenv import load_dotenv, find_dotenv
 
+load_dotenv(find_dotenv())
 
 def main():
     sensor = Sensor()

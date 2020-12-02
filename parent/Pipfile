@@ -9,6 +9,8 @@ verify_ssl = true
 schedule = "*"
 bottle = "*"
 requests = "*"
+line-bot-sdk = "*"
+python-dotenv = "*"
 
 [requires]
 python_version = "3.8"
