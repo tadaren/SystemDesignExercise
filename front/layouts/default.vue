@@ -5,7 +5,7 @@
       role="navigation"
       aria-label="main navigation"
     >
-      <span class="navbar-brand is-size-3"> 換気システム </span>
+      <span class="navbar-brand is-size-3 ml-4"> 換気システム </span>
     </nav>
 
     <section class="main-content columns">
