@@ -25,7 +25,12 @@ export default {
       if(this.selectedLevel === '締め切り'){
         level = '0'
       }
-      this.$axios.post('/api/openlimit', level);
+      this.$axios.post('/api/openlimit', level).then(res => {
+        this.$buefy.toast.open({
+          message: '開放限度が変更されました',
+          type: 'is-success'
+        });
+      });
     }
   },
   data(){
