@@ -41,19 +41,19 @@ export default {
     'nuxt-buefy',
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
-    '@nuxtjs/proxy'
+    '@nuxtjs/proxy',
   ],
   proxy: {
     '/api/': {
       target: 'http://localhost:8080/',
       changeOrigin: true,
-      secure: false
-    }
+      secure: false,
+    },
   },
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
   axios: {
-    proxy: true
+    proxy: true,
   },
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)

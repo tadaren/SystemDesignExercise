@@ -19,21 +19,18 @@ export default {
   components: {
     Card,
   },
-  methods: {
-    apply: function(){
-      let level = this.selectedLevel.slice(0, -1);
-      if(this.selectedLevel === '締め切り'){
-        level = '0'
-      }
-      this.$axios.post('/api/openlimit', level).then(res => {
-        this.$buefy.toast.open({
-          message: '開放限度が変更されました',
-          type: 'is-success'
-        });
-      });
+  async asyncData({ $axios }) {
+    const data = await $axios.$get('/api/openlimit')
+    let limitLevel = data + '%'
+    if (data === '0') {
+      limitLevel = '締め切り'
+    }
+    return {
+      limit: data,
+      selectedLevel: limitLevel,
     }
   },
-  data(){
+  data() {
     return {
       limitLevel: [
         '締め切り',
@@ -46,20 +43,23 @@ export default {
         '70%',
         '80%',
         '90%',
-        '100%'
+        '100%',
       ],
     }
   },
-  async asyncData({ $axios }){
-    let data = await $axios.$get('/api/openlimit');
-    let limitLevel = data+'%'
-    if(data === '0'){
-      limitLevel = '締め切り'
-    }
-    return {
-      limit: data,
-      selectedLevel: limitLevel,
-    }
-  }
+  methods: {
+    apply() {
+      let level = this.selectedLevel.slice(0, -1)
+      if (this.selectedLevel === '締め切り') {
+        level = '0'
+      }
+      this.$axios.post('/api/openlimit', level).then((_) => {
+        this.$buefy.toast.open({
+          message: '開放限度が変更されました',
+          type: 'is-success',
+        })
+      })
+    },
+  },
 }
 </script>

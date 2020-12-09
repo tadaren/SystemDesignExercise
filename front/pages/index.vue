@@ -30,12 +30,17 @@ export default {
   components: {
     Card,
   },
-  async asyncData({ $axios }){
-    let res = await Promise.all([$axios.$get('/api/humid'), $axios.$get('/api/isopen'), $axios.$get('/api/openlimit'), $axios.$get('/api/mode')]);
-    let humid = Number.parseFloat(res[0]);
-    let isOpen = res[1] == 'True';
-    let openLimit = Number.parseInt(res[2]);
-    let mode = res[3];
+  async asyncData({ $axios }) {
+    const res = await Promise.all([
+      $axios.$get('/api/humid'),
+      $axios.$get('/api/isopen'),
+      $axios.$get('/api/openlimit'),
+      $axios.$get('/api/mode'),
+    ])
+    const humid = Number.parseFloat(res[0])
+    const isOpen = res[1] === 'True'
+    const openLimit = Number.parseInt(res[2])
+    const mode = res[3]
 
     return {
       humid,
@@ -44,47 +49,44 @@ export default {
       mode,
     }
   },
-  watch:{
-    mode: function(newValue, oldValue){
-      this.$axios.post('/api/mode', newValue);
-    }
-  },
   computed: {
-    open: function(){
-      if(this.isOpen){
-        return 'OPEN';
-      }else{
-        return 'CLOSE';
+    open() {
+      if (this.isOpen) {
+        return 'OPEN'
+      } else {
+        return 'CLOSE'
       }
     },
-    isDanger: function(){
+    isDanger() {
       return this.humid <= 30.0
     },
-    openLimitText: function(){
-      if(this.openLimit == 0){
-        return '締め切り';
-      }else{
-        return this.openLimit + '%';
+    openLimitText() {
+      if (this.openLimit === 0) {
+        return '締め切り'
+      } else {
+        return this.openLimit + '%'
       }
-    }
+    },
   },
-  mounted: function(){
+  watch: {
+    mode(newValue, _) {
+      this.$axios.post('/api/mode', newValue)
+    },
+  },
+  mounted() {
     setInterval(() => {
-      this.$axios.get('/api/humid').then(res => {
-        console.log(res);
-        this.humid = Number.parseFloat(res.data);
-      });
-      this.$axios.get('/api/isopen').then(res => {
-        console.log(res);
-        this.isOpen = res.data == 'True';
+      this.$axios.get('/api/humid').then((res) => {
+        this.humid = Number.parseFloat(res.data)
       })
-    }, 1000);
+      this.$axios.get('/api/isopen').then((res) => {
+        this.isOpen = res.data === 'True'
+      })
+    }, 1000)
     setInterval(() => {
-      this.$axios.get('/api/openlimit').then(res => {
-        console.log(res);
-        this.openLimit = Number.parseInt(res.data);
+      this.$axios.get('/api/openlimit').then((res) => {
+        this.openLimit = Number.parseInt(res.data)
       })
-    }, 10000);
-  }
+    }, 10000)
+  },
 }
 </script>
