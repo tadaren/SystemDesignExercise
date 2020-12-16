@@ -44,7 +44,7 @@ class Server:
 
         @app.get('/api/humid')
         def get_humid():
-            return str(sensor.get_humid())
+            return f'{sensor.get_humid():.1f}'
 
         @app.get('/api/mode')
         def get_mode():
