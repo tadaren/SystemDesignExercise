@@ -12,12 +12,14 @@ def main():
     sensor = Sensor()
     window_controller = WindowController()
     notice_sender = NoticeSender()
-    ventilation = Ventilation(window_controller, notice_sender, sensor)
 
-    scheduler = Scheduler(ventilation)
+    scheduler = Scheduler()
     scheduler.start()
 
-    server = Server(window_controller, sensor)
+    ventilation = Ventilation(window_controller, notice_sender, sensor, scheduler)
+    ventilation.start()
+
+    server = Server(window_controller, sensor, ventilation)
     server.run()
 
 
