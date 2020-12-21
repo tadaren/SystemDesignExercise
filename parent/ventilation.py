@@ -40,7 +40,7 @@ class Ventilation:
             extention_start_time = time.time()
             while humid <= 30 and time.time() < extention_start_time + 600:
                 humid = self.sensor.get_humid()
-                time.sleep(1)
+                time.sleep(30)
 
         if end_humid <= 30:
             self.notice_sender.send("湿度が低下しています")
