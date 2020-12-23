@@ -1,0 +1,61 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: cd
+        run: cd front
+
+      - name: setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      
+      - name: install
+        run: npm ci
+
+      - name: test
+        run: npm test
+
+      - name: generate
+        run: npm run generate
+
+      - name: move
+        run: mv dist/ ../parent/static
+
+      - name: cd
+        run: cd ../parent
+
+      - name: zip
+        run: zip -r release *.* static
+
+      - name: create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      
+      - name: upload release asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./release.zip
+          asset_name: parent.zip
+          asset_content_type: application/zip
+
