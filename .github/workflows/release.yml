@@ -11,31 +11,28 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: cd
-        run: cd front
-
       - name: setup node
         uses: actions/setup-node@v2
         with:
           node-version: '14'
       
-      - name: install
-        run: npm ci
-
-      - name: test
-        run: npm test
+      - name: install and test
+        run: npm ci && npm test
+        working-directory: ./front
 
       - name: generate
         run: npm run generate
+        working-directory: ./front
 
       - name: move
-        run: mv dist/ ../parent/static
-
-      - name: cd
-        run: cd ../parent
+        run: |
+          rm ./parent/static
+          mv ./front/dist/ ./parent/static
 
       - name: zip
-        run: zip -r release *.* static
+        run: |
+          cd parent
+          zip -r release *.* static
 
       - name: create release
         id: create_release
@@ -55,7 +52,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./release.zip
+          asset_path: ./parent/release.zip
           asset_name: parent.zip
           asset_content_type: application/zip
 
